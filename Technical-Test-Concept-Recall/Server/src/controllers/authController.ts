@@ -1,7 +1,8 @@
 import user from '../models/users'
-import { error } from 'console'
 import { Request, Response } from 'express'
 import { hashPassword, comparePassword } from '../helpers/auth'
+import jwt, { Secret } from 'jsonwebtoken'
+
 
 const test = (req: Request, res: Response) => {
     res.json('test is working')
@@ -72,15 +73,32 @@ const loginUser = async (req: Request, res: Response) => {
 
         // Compare passwords
         const match = await comparePassword(password, User.password)
-        if (match) {
-            return res.json('password matched')
+        if (!match) {
+            return res.json({
+                error: 'Incorrect password'
+            })
         }
 
-
-
-    } catch (error) {
-        console.log(error)
+    // If password matches and JWT_SECRET is defined, generate JWT token
+    if (process.env.JWT_SECRET) {
+        jwt.sign({ email: User.email, id: User._id, name: User.name }, process.env.JWT_SECRET as Secret, {}, (err, token) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+            // Set the token as a cookie
+            res.cookie('token', token).json(User);
+        });
+    } else {
+        console.error('JWT_SECRET is not defined');
+        return res.status(500).json({ error: 'Internal server error' });
     }
+
+} catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
 }
+};
+
 
 export { test, signupUser, loginUser }

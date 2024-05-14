@@ -24,20 +24,20 @@ const signupUser = async (req: Request, res: Response) => {
         }
         //check email
 
-        const exist = await user.findOne({email})
-        if(!exist){
+        const exist = await user.findOne({ email })
+        if (exist) {
             return res.json({
                 error: 'email already exist'
             })
         }
 
         const User = await user.create({
-            name,email,password
+            name, email, password
         })
 
         return res.json(User)
     } catch (error) {
-console.log(error)
+        console.log(error)
     }
 }
 

@@ -2,15 +2,15 @@ import bcrypt from 'bcrypt'
 
 const hashPassword = (password: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-        bcrypt.genSalt(12, (err: Error, salt: string) => {
+        bcrypt.genSalt(12, (err, salt: string) => {
             if (err) {
                 reject(err)
             }
-            bcrypt.hash(password, salt as string, (err: Error, salt: string) => {
+            bcrypt.hash(password, salt as string, (err, hash: string) => {
                 if (err) {
                     reject(err)
                 }
-                resolve(hash as string)
+                resolve(hash)
             })
         })
     })

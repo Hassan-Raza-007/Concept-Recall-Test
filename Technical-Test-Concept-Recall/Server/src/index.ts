@@ -4,7 +4,7 @@ import cors from 'cors'
 import authRoutes from './routes/authRoutes'
 import mongoose from 'mongoose'
 
-const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_URL, DATABASE_NAME } =  process.env;
+
 
 mongoose.connect('mongodb+srv://hassanra34:FxvGligA6iw9awGy@cluster0.tms0l8o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 .then(()=>console.log('Database Connected'))

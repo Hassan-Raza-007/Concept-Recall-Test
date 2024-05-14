@@ -1,16 +1,33 @@
 import axios from "axios"
 import { useState } from "react"
-import { Link } from "react-router-dom"
-
+import { Link, useNavigate } from "react-router-dom"
+import {toast} from "react-hot-toast"
 
 const Login = () => {
+const navigate =useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const Login_Submit_Handle = (e: React.FormEvent<HTMLFormElement>) => {
+  const Login_Submit_Handle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(email,password)
-    axios.get('/')
+    // console.log(email,password)
+    
+    try {
+      const {data} = await axios.post('http://localhost:8000/login',{
+        email,
+        password}
+      )
+      if(data.error){
+        toast.error(data.error)
+      }else{
+        setEmail('')
+        setPassword('')
+        navigate('/')
+      }
+    } catch (error) {
+      
+    }
   }
   return (
     <div className="flex justify-center items-center h-screen bg-slate-500">

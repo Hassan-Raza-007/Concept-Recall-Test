@@ -23,7 +23,9 @@ const navigate = useNavigate()
     if(data.error){
       toast.error(data.error)
     }else{
-      // setData({})
+      setName('')
+      setEmail('')
+      setPassword('')
       toast.success('Login Successfull. Welcome')
       navigate('/login')
     }

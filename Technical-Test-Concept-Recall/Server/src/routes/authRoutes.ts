@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 const router = express.Router()
-import {test, signupUser}  from '../controllers/authController'
+import {test, signupUser, loginUser }  from '../controllers/authController'
 
 const corsOptions = {
     credentials: true,
@@ -13,5 +13,6 @@ router.use(cors(corsOptions))
 
 router.get('/', test)
 router.post('/signup', signupUser)
+router.post('/login', loginUser)
 
 export default router

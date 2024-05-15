@@ -5,6 +5,8 @@ import authRoutes from './routes/authRoutes'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
 
+// const DATABASE_USERNAME = process.env
+// console.log(DATABASE_USERNAME)
 
 mongoose.connect('mongodb+srv://hassanra34:FxvGligA6iw9awGy@cluster0.tms0l8o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 .then(()=>console.log('Database Connected'))

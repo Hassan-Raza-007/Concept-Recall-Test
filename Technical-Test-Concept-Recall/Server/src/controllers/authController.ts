@@ -79,26 +79,26 @@ const loginUser = async (req: Request, res: Response) => {
             })
         }
 
-    // If password matches and JWT_SECRET is defined, generate JWT token
-    if (process.env.JWT_SECRET) {
-        jwt.sign({ email: User.email, id: User._id, name: User.name }, process.env.JWT_SECRET as Secret, {}, (err, token) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-            // Set the token as a cookie
+        const JWT_SECRET = process.env
+        console.log(JWT_SECRET.ChocolateyLastPathUpdate)
+
+        jwt.sign({ email: User.email, id: User._id, name: User.name }, JWT_SECRET.ChocolateyLastPathUpdate as Secret, {}, (err, token) => {
+            if (err) throw err
+
             res.cookie('token', token).json(User);
-        });
-    } else {
-        console.error('JWT_SECRET is not defined');
-        return res.status(500).json({ error: 'Internal server error' });
+        })
+        if(!match){
+            res.json({
+                error:'Incorrect Password'
+            })
+        }
     }
 
-} catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }
-};
 
 
 export { test, signupUser, loginUser }

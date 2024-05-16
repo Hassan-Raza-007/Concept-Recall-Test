@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 const router = express.Router()
-import {test, signupUser, loginUser }  from '../controllers/authController'
+import {signupUser, loginUser,getProfile, todo, gettodo,checkbox}  from '../controllers/authController'
 
 const corsOptions = {
     credentials: true,
@@ -11,8 +11,13 @@ const corsOptions = {
 // middleware
 router.use(cors(corsOptions))
 
-router.get('/', test)
+// router.get('/', test)
 router.post('/signup', signupUser)
 router.post('/login', loginUser)
+router.get('/profile',getProfile)
+router.post('/add',todo)
+router.get('/get',gettodo)
+router.put('/update/:id',checkbox)
+
 
 export default router

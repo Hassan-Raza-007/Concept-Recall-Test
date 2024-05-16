@@ -1,12 +1,13 @@
 import user from '../models/users'
+import todoModel from '../models/todos'
 import { Request, Response } from 'express'
 import { hashPassword, comparePassword } from '../helpers/auth'
 import jwt, { Secret } from 'jsonwebtoken'
 
 
-const test = (req: Request, res: Response) => {
-    res.json('test is working')
-}
+// const test = async (req: Request, res: Response) => {
+//     res.json('test is working')
+// }
 
 //signip endpoint
 
@@ -87,9 +88,9 @@ const loginUser = async (req: Request, res: Response) => {
 
             res.cookie('token', token).json(User);
         })
-        if(!match){
+        if (!match) {
             res.json({
-                error:'Incorrect Password'
+                error: 'Incorrect Password'
             })
         }
     }
@@ -101,4 +102,42 @@ const loginUser = async (req: Request, res: Response) => {
 }
 
 
-export { test, signupUser, loginUser }
+const getProfile = (req: Request, res: Response) => {
+    const JWT_SECRET = process.env.JWT_SECRET
+    const token = req.cookies.token;
+    if (token && JWT_SECRET) {
+        jwt.verify(token, JWT_SECRET as Secret, {}, (err: any, user: any) => {
+            if (err) throw err;
+            res.json(user);
+        })
+    } else {
+        res.json(null)
+    }
+}
+
+
+
+const todo = (req: Request, res: Response) => {
+    const task = req.body.task;
+    todoModel.create({
+        task: task
+    }).then(result => res.json(result))
+        .catch(err => res.json(err))
+}
+
+
+const gettodo = (req: Request, res: Response) => {
+    todoModel.find()
+        .then(result => res.json(result))
+        .catch(err => res.json(err))
+}
+
+const checkbox =(req: Request, res: Response)=>{
+    const {id}= req.params
+   todoModel.findOneAndUpdate({_id:id},{done:true})
+   .then(result => res.json(result))
+   .catch(err => res.json(err))
+
+}
+
+export { signupUser, loginUser, getProfile, todo, gettodo ,checkbox}

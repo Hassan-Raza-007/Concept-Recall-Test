@@ -132,12 +132,25 @@ const gettodo = (req: Request, res: Response) => {
         .catch(err => res.json(err))
 }
 
-const checkbox =(req: Request, res: Response)=>{
-    const {id}= req.params
-   todoModel.findOneAndUpdate({_id:id},{done:true})
-   .then(result => res.json(result))
-   .catch(err => res.json(err))
+const checkbox = (req: Request, res: Response) => {
+    const { id } = req.params
+    todoModel.findOneAndUpdate({ _id: id }, { done: true })
+        .then(result => res.json(result))
+        .catch(err => res.json(err))
 
 }
 
-export { signupUser, loginUser, getProfile, todo, gettodo ,checkbox}
+const deletetodo = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await todoModel.findByIdAndDelete(id);
+        if (result) {
+            res.status(200).json({ message: 'Todo deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Todo not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: (err as Error).message });
+    }
+};
+export { signupUser, loginUser, getProfile, todo, gettodo, checkbox, deletetodo }

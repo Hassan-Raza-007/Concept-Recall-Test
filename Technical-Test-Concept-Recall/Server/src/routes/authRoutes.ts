@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 const router = express.Router()
-import {signupUser, loginUser,getProfile, todo, gettodo,checkbox}  from '../controllers/authController'
+import {signupUser, loginUser,getProfile, todo, gettodo,checkbox, deletetodo}  from '../controllers/authController'
 
 const corsOptions = {
     credentials: true,
@@ -18,6 +18,7 @@ router.get('/profile',getProfile)
 router.post('/add',todo)
 router.get('/get',gettodo)
 router.put('/update/:id',checkbox)
+router.delete('/delete/:id',deletetodo)
 
 
 export default router

@@ -132,11 +132,11 @@ const gettodo = (req: Request, res: Response) => {
         .catch(err => res.json(err))
 }
 
-const checkbox = (req: Request, res: Response) => {
-    const { id } = req.params
-    todoModel.findOneAndUpdate({ _id: id }, { done: true })
-        .then(result => res.json(result))
-        .catch(err => res.json(err))
+const checkbox =(req: Request, res: Response)=>{
+    const {id}= req.params
+   todoModel.findOneAndUpdate({_id:id},{done:true})
+   .then(result => res.json(result))
+   .catch(err => res.json(err))
 
 }
 
@@ -153,4 +153,4 @@ const deletetodo = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Server error', error: (err as Error).message });
     }
 };
-export { signupUser, loginUser, getProfile, todo, gettodo, checkbox, deletetodo }
+export { signupUser, loginUser, getProfile, todo, gettodo ,checkbox,deletetodo}

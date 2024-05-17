@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-const Login = () => {
+const Login =({ setToken }: { setToken: (token: string) => void }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -13,11 +13,12 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post('http://localhost:8000/login', {
+      const response: AxiosResponse<{ token: string, error?: string }> = await axios.post('http://localhost:8000/login', {
         email,
         password
       });
-
+      const { data } = response;
+      setToken(data.token);
       if (data.error) {
         toast.error(data.error);
       } else {

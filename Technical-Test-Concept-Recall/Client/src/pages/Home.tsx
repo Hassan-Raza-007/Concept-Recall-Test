@@ -9,22 +9,28 @@ interface Todo {
   done: boolean;
 }
 
-const Home = () => {
+const Home = ({ token }: { token: string }) => {
   const [task, setTask] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
 
+
+
   useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/get', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setTodos(response.data);
+      } catch (error) {
+        console.error('Failed to fetch todos:', error);
+      }
+    };
+
     fetchTodos();
-  }, []);
-
-  const fetchTodos = () => {
-    axios.get('http://localhost:8000/get')
-      .then(result => setTodos(result.data))
-      .catch(err => console.log(err));
-  };
-
+  }, [token]);
   const addTodos = () => {
-    axios.post('http://localhost:8000/add', { task })
+    axios.post('http://localhost:8000/add', { task }, { headers: { Authorization: `Bearer ${token}` }})
       .then(result => {
         setTodos([...todos, result.data]);
         setTask('');
@@ -75,8 +81,8 @@ const Home = () => {
             : todos.map(todo => (
               <div key={todo._id} className="flex items-center w-80 justify-between bg-slate-500 text-white h-9 mt-1 px-2 py-1">
                 <div className="flex items-center" onClick={() => checkbox_Handle(todo._id)}>
-                  {todo.done 
-                    ? <BsFillCheckCircleFill className="mr-2 text-lg" /> 
+                  {todo.done
+                    ? <BsFillCheckCircleFill className="mr-2 text-lg" />
                     : <BsCircleFill className="mr-2 text-lg" />}
                   <p>{todo.task}</p>
                 </div>

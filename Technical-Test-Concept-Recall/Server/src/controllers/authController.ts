@@ -1,9 +1,16 @@
 import user from '../models/users'
 import todoModel from '../models/todos'
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { hashPassword, comparePassword } from '../helpers/auth'
 import jwt, { Secret } from 'jsonwebtoken'
 
+declare global {
+    namespace Express {
+        interface Request {
+            userId?: string;
+        }
+    }
+}
 
 // const test = async (req: Request, res: Response) => {
 //     res.json('test is working')
@@ -58,7 +65,8 @@ const loginUser = async (req: Request, res: Response) => {
         const { email, password } = req.body
 
         // Check if user exists
-        const User = await user.findOne({ email })
+        const User = await user.findOne({ email }) 
+
         if (!User) {
             return res.json({
                 error: 'No user found'
@@ -80,27 +88,15 @@ const loginUser = async (req: Request, res: Response) => {
             })
         }
 
-        const JWT_SECRET = process.env
-        console.log(JWT_SECRET.ChocolateyLastPathUpdate)
+        // Generate JWT token
+        const token = jwt.sign({ userId: User._id }, 'secret_key');
+        res.send({ token });
 
-        jwt.sign({ email: User.email, id: User._id, name: User.name }, JWT_SECRET.ChocolateyLastPathUpdate as Secret, {}, (err, token) => {
-            if (err) throw err
-
-            res.cookie('token', token).json(User);
-        })
-        if (!match) {
-            res.json({
-                error: 'Incorrect Password'
-            })
-        }
-    }
-
-    catch (error) {
+    } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
-
 
 const getProfile = (req: Request, res: Response) => {
     const JWT_SECRET = process.env.JWT_SECRET
@@ -132,11 +128,11 @@ const gettodo = (req: Request, res: Response) => {
         .catch(err => res.json(err))
 }
 
-const checkbox =(req: Request, res: Response)=>{
-    const {id}= req.params
-   todoModel.findOneAndUpdate({_id:id},{done:true})
-   .then(result => res.json(result))
-   .catch(err => res.json(err))
+const checkbox = (req: Request, res: Response) => {
+    const { id } = req.params
+    todoModel.findOneAndUpdate({ _id: id }, { done: true })
+        .then(result => res.json(result))
+        .catch(err => res.json(err))
 
 }
 
@@ -153,4 +149,24 @@ const deletetodo = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Server error', error: (err as Error).message });
     }
 };
-export { signupUser, loginUser, getProfile, todo, gettodo ,checkbox,deletetodo}
+
+
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
+    const tokenHeader = req.header('Authorization');
+    
+    if (!tokenHeader) {
+        return res.status(401).send('Unauthorized: No token provided');
+    }
+
+    const token = tokenHeader.replace('Bearer ', '');
+
+    try {
+        const decoded = jwt.verify(token, 'secret_key') as { userId: string };
+        req.userId = decoded.userId;
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(401).send('Unauthorized: Invalid token');
+    }
+};
+export { signupUser, loginUser, getProfile, todo, gettodo, checkbox, deletetodo, authenticate }

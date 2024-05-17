@@ -1,32 +1,48 @@
-import { Route, Routes } from "react-router-dom"
-import Login from "./pages/Login"
-import Signup from "./pages/Signup"
-import Home from "./pages/Home"
-import "./App.css"
-import axios from "axios"
-import { Toaster } from "react-hot-toast"
-import { UserContextProvider } from '../context/userContext'
-// import Router_App from "./config/Router/Router_App"
+import { Route, Routes, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
+import "./App.css";
+import axios from "axios";
+import { Toaster } from "react-hot-toast";
+import { UserContextProvider } from '../context/userContext';
+import { useState, useEffect } from "react";
 
-axios.defaults.url = 'http://localhost:8000'
-axios.defaults.withCredentials = true
-
+axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.withCredentials = true;
 
 const App = () => {
+  const [token, setToken] = useState('');
 
-  
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
   return (
     <UserContextProvider>
       <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Signup" element={<Signup />} />
+        {!token ? (
+          <>
+            <Route path="/login" element={<Login setToken={setToken} />} />
+            <Route path="/signup" element={<Signup />} />
+            {/* Redirect to login if no token */}
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Home token={token} />} />
+            {/* Redirect to home if token */}
+            <Route path="/login" element={<Navigate to="/" />} />
+            <Route path="/signup" element={<Navigate to="/" />} />
+          </>
+        )}
       </Routes>
-
-      {/* <Router_App /> */}
     </UserContextProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;
